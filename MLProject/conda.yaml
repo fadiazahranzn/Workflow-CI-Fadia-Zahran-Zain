@@ -1,12 +1,13 @@
-name: mlflow-env
+name: nasa_env
 channels:
   - conda-forge
 dependencies:
-  - python=3.9
+  - python=3.10
   - pip
   - pip:
-      - mlflow
+      - mlflow==2.19.0
+      - dagshub
       - pandas
       - scikit-learn
-      - numpy
-      - joblib
+      - matplotlib
+      - seaborn

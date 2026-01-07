@@ -1,32 +1,36 @@
-name: MLflow CI Retraining
+name: Workflow CI MLflow
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  retrain:
+  mlflow-run:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
 
-    - name: Install MLflow
-      run: pip install mlflow
+      - name: Install Dependencies
+        run: |
+            pip install mlflow dagshub pandas scikit-learn matplotlib seaborn
+            pip install -r requirements.txt
 
-    - name: Run MLflow Project
-      run: |
-        cd MLProject
-        mlflow run .
+      - name: Run MLflow Project
+        env:
+            MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+            MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+        run: python MLProject/modelling.py
 
-    - name: Upload MLflow Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: mlflow-artifacts
-        path: mlruns
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-results
+          path: mlruns/
