@@ -1,23 +1,49 @@
 import pandas as pd
 import mlflow
+import mlflow.sklearn
 from sklearn.ensemble import RandomForestClassifier
+import os
 
-# Setup tracking ke DagsHub (Username & Password diambil dari ENV GitHub Actions)
-mlflow.set_tracking_uri("https://dagshub.com/MENSTRUE/Eksperimen_SML_wafa_bila_syaefurokhman.mlflow")
+# 1. SET MLflow LOCAL (WAJIB)
+mlflow.set_tracking_uri("http://127.0.0.1:5000")
+mlflow.set_experiment("NASA Asteroid Scoring")
 
-# PATH DATA: Harus relatif terhadap lokasi file MLProject
-# Karena running di GitHub Actions, path-nya adalah:
-X_path = 'MLProject/preprocessing/nearest_earth_object_preprocessing/X_train.csv'
-y_path = 'MLProject/preprocessing/nearest_earth_object_preprocessing/y_train.csv'
+# 2. PATH DATA
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
+
+X_path = os.path.join(
+    PROJECT_ROOT,
+    "preprocessing",
+    "nearest_earth_object_preprocessing",
+    "X_train.csv"
+)
+
+y_path = os.path.join(
+    PROJECT_ROOT,
+    "preprocessing",
+    "nearest_earth_object_preprocessing",
+    "y_train.csv"
+)
+
+print("PROJECT_ROOT:", PROJECT_ROOT)
+print("X_path:", X_path)
+print("X exists:", os.path.exists(X_path))
+print("Y exists:", os.path.exists(y_path))
+
 
 X_train = pd.read_csv(X_path)
 y_train = pd.read_csv(y_path)
 
-# Aktifkan autolog agar tercatat otomatis ke Run yang dibuat oleh Workflow CI
+# 3. AKTIFKAN AUTOLOG
 mlflow.sklearn.autolog()
 
-# LANGSUNG TRAINING (Tanpa start_run manual)
-model = RandomForestClassifier(random_state=42)
-model.fit(X_train, y_train.values.ravel())
+# 4. TRAINING MODEL
+with mlflow.start_run(run_name="NASA_Asteroid_Basic_Local"):
+    model = RandomForestClassifier(random_state=42)
+    model.fit(X_train, y_train.values.ravel())
 
-print("Modelling CI Selesai!")
+    print("✅ Modelling Basic selesai!")
+    print("📊 Cek MLflow UI di http://127.0.0.1:5000")
+    print("🚀 Model tersimpan di MLflow Model Registry")

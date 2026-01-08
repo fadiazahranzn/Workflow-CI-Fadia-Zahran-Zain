@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  mlflow-project:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,14 +17,13 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
+        python-version: '3.10'
 
-    - name: Install dependencies
+    - name: Install MLflow
       run: |
         pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install mlflow
 
-
-    - name: Run training script
+    - name: Run MLflow Project
       run: |
-        python MLProject/modelling.py
+        mlflow run .
