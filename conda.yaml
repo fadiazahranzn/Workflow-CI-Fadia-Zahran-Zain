@@ -11,17 +11,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-    # 🔥 INI YANG KURANG SELAMA INI
     - name: Set up Miniconda
       uses: conda-incubator/setup-miniconda@v3
       with:
-        auto-update-conda: true
         activate-environment: mlflow-env
         environment-file: conda.yaml
         python-version: 3.10
+        auto-update-conda: true
 
     - name: Install MLflow
       shell: bash -l {0}
@@ -31,4 +29,4 @@ jobs:
     - name: Run MLflow Project
       shell: bash -l {0}
       run: |
-        mlflow run .
+        conda run -n mlflow-env mlflow run . --no-conda
