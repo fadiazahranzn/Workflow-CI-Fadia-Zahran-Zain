@@ -1,32 +1,12 @@
-name: CI Workflow
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-jobs:
-  mlflow-project:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Miniconda
-      uses: conda-incubator/setup-miniconda@v3
-      with:
-        activate-environment: mlflow-env
-        environment-file: conda.yaml
-        python-version: 3.10
-        auto-update-conda: true
-
-    - name: Install MLflow
-      shell: bash -l {0}
-      run: |
-        pip install mlflow
-
-    - name: Run MLflow Project
-      shell: bash -l {0}
-      run: |
-        conda run -n mlflow-env mlflow run . --no-conda
+name: mlflow-env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - mlflow>=2.9.0
+      - scikit-learn==1.3.2
+      - pandas
+      - numpy
+      - matplotlib
